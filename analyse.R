@@ -37,6 +37,8 @@ d <- d[which(!is.na(d[,'f.5099.0.0'])),]
 # Loss vision trauma 5430-0.0
 # Ever had eye surgery 5181-0.0
 
+f.5085.0.0
+
 
 # RESPONSE variables
 
@@ -172,6 +174,12 @@ d[,'weight'] <- d[,'f.23098.0.0']
 # Age completed education 845-0.0
 # Qualifications 6138-0.0
 # Sphere power right 5084-0.0
+
+# Description:	Spherical power (left)
+d$right_spherical_power <- d$f.5085.0.0
+
+# Description:	Spherical power (right)
+d$left_spherical_power <- d$f.5084.0.0
 
 # Corneal hysteresis right 5256-0.0
 d[,'hysteresis'] <- d[,'f.5256.0.0']

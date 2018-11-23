@@ -1,6 +1,6 @@
 
 # load continuous univariate astigmatism
-d.left <- read('left_astigmatism-univariate-continuous.csv')
+d.left <- read('left_corneal_astigmatism-univariate-continuous.csv')
 left.cont.covariates <- d.left$var[ which(d.left$pvalue>0)]
 # ignore all covariates which are more than 95% misisng
 left.cont.covariates <- left.cont.covariates[sapply(left.cont.covariates, function(x) length(which(is.na(d[,x])))/length(d[,x]))<.95]
@@ -41,7 +41,7 @@ cor(na.omit(d[,c( 'f.23098.0.0', 'f.23099.0.0', 'f.23105.0.0')]))
 
  "3mm asymmetry angle (left)"
 
-s <- summary(lm(as.formula(paste('log(left_astigmatism) ~', paste(xx,collapse=' + '))),data=d))
+s <- summary(lm(as.formula(paste('log(left_corneal_astigmatism) ~', paste(xx,collapse=' + '))),data=d))
 # remove measurements with NA coefficient
 print(setdiff(left.cont.covariates, names((s$left.cont.coefficients[,1]))))
 left.cont.covariates <- intersect(covariates,names((s$left.cont.coefficients[,1])))
@@ -81,25 +81,25 @@ left.cont.covariates <- intersect(covariates,names((s$left.cont.coefficients[,1]
 
 
 
-imp <- rfImpute(y=d[1:n,'left_astigmatism'],x=d[1:n,covariates])
+imp <- rfImpute(y=d[1:n,'left_corneal_astigmatism'],x=d[1:n,covariates])
 
 
 covariates <- c("f.21003.0.0", "f.34.0.0", "f.5096.0.0", "f.5292.0.0", "f.5089.0.0", "f.1050.0.0", "f.1060.0.0", "f.5206.0.0", "f.50.0.0", "f.4079.0.0", "f.4080.0.0", "f.4196.0.0", "f.5208.0.0", "f.21021.0.0", "f.20023.0.0", "f.5163.0.0", "f.5156.0.0", "f.5111.0.0", "f.23105.0.0", "f.23098.0.0",'age','gender','height','weight')
-X <- na.omit(d[,c('left_astigmatism',covariates)])
-(s <- summary(m <- lm(as.formula(paste('log(left_astigmatism) ~', paste(covariates,collapse=' + '))),data=X)))
+X <- na.omit(d[,c('left_corneal_astigmatism',covariates)])
+(s <- summary(m <- lm(as.formula(paste('log(left_corneal_astigmatism) ~', paste(covariates,collapse=' + '))),data=X)))
 res <- data.frame(description=dict[ rownames(s$coefficients),'Description'],s$coefficients)
 print(res[order(res[,'Pr...t..']),])
 
 
 library(missForest)
 
-imp <- rfImpute(y=d[1:n,'left_astigmatism'],x=d[1:n,covariates])
+imp <- rfImpute(y=d[1:n,'left_corneal_astigmatism'],x=d[1:n,covariates])
 
 
 
 
 # load catergorical univariate astigmatism
-d.left <- read('left_astigmatism-univariate-categorical.csv')
+d.left <- read('left_corneal_astigmatism-univariate-categorical.csv')
 covariates <- d.left$var[ which(d.left$pvalue>0)]
 # ignore all covariates which are more than 95% misisng
 covariates <- covariates[sapply(covariates, function(x) length(which(is.na(d[,x])))/length(d[,x]))<.95]
@@ -108,17 +108,17 @@ covariates <- covariates[-grep('right', dict[covariates,'Description'])]
 # only keep initial measurements
 covariates <- grep('.0.0$',covariates,value=TRUE)
 #
-s <- summary(lm(as.formula(paste('log(left_astigmatism) ~', paste(covariates,collapse=' + '))),data=d))
+s <- summary(lm(as.formula(paste('log(left_corneal_astigmatism) ~', paste(covariates,collapse=' + '))),data=d))
 # remove measurements with NA coefficient
 #print(setdiff(covariates, names((s$coefficients[,1]))))
 #covariates <- intersect(covariates,names((s$coefficients[,1])))
 #
-print(s <- summary(lm(as.formula(paste('log(left_astigmatism) ~', paste(covariates,collapse=' + '))),data=d)))
+print(s <- summary(lm(as.formula(paste('log(left_corneal_astigmatism) ~', paste(covariates,collapse=' + '))),data=d)))
 
 
 
 # load continuous univariate astigmatism
-d.right <- read('right_astigmatism-univariate-continuous.csv')
+d.right <- read('right_corneal_astigmatism-univariate-continuous.csv')
 covariates <- d.right$var[ which(d.right$pvalue>0)]
 # ignore all covariates which are more than 95% misisng
 covariates <- covariates[sapply(covariates, function(x) length(which(is.na(d[,x])))/length(d[,x]))<.95]
@@ -127,16 +127,16 @@ covariates <- covariates[-grep('left', dict[covariates,'Description'])]
 # only keep initial measurements
 covariates <- grep('.0.0$',covariates,value=TRUE)
 #
-s <- summary(lm(as.formula(paste('log(right_astigmatism) ~', paste(covariates,collapse=' + '))),data=d))
+s <- summary(lm(as.formula(paste('log(right_corneal_astigmatism) ~', paste(covariates,collapse=' + '))),data=d))
 # remove measurements with NA coefficient
 print(setdiff(covariates, names((s$coefficients[,1]))))
 covariates <- intersect(covariates,names((s$coefficients[,1])))
 #
-print(s <- summary(lm(as.formula(paste('log(right_astigmatism) ~', paste(covariates,collapse=' + '))),data=d)))
+print(s <- summary(lm(as.formula(paste('log(right_corneal_astigmatism) ~', paste(covariates,collapse=' + '))),data=d)))
 
 
 # load catergorical univariate astigmatism
-d.right <- read('right_astigmatism-univariate-categorical.csv')
+d.right <- read('right_corneal_astigmatism-univariate-categorical.csv')
 covariates <- d.right$var[ which(d.right$pvalue>0)]
 # ignore all covariates which are more than 95% misisng
 covariates <- covariates[sapply(covariates, function(x) length(which(is.na(d[,x])))/length(d[,x]))<.95]
@@ -145,12 +145,12 @@ covariates <- covariates[-grep('left', dict[covariates,'Description'])]
 # only keep initial measurements
 covariates <- grep('.0.0$',covariates,value=TRUE)
 #
-s <- summary(lm(as.formula(paste('log(right_astigmatism) ~', paste(covariates,collapse=' + '))),data=d))
+s <- summary(lm(as.formula(paste('log(right_corneal_astigmatism) ~', paste(covariates,collapse=' + '))),data=d))
 # remove measurements with NA coefficient
 #print(setdiff(covariates, names((s$coefficients[,1]))))
 #covariates <- intersect(covariates,names((s$coefficients[,1])))
 #
-print(s <- summary(lm(as.formula(paste('log(right_astigmatism) ~', paste(covariates,collapse=' + '))),data=d)))
+print(s <- summary(lm(as.formula(paste('log(right_corneal_astigmatism) ~', paste(covariates,collapse=' + '))),data=d)))
 
 
 
@@ -160,14 +160,14 @@ print(s <- summary(lm(as.formula(paste('log(right_astigmatism) ~', paste(covaria
 covariates2 <- c()
 for (x in covariates) {
     covariates2 <- c(covariates2,x)
-    form <- as.formula(paste('log(left_astigmatism) ~', paste(covariates2,collapse=' + ')))
+    form <- as.formula(paste('log(left_corneal_astigmatism) ~', paste(covariates2,collapse=' + ')))
     print(s<-summary(lm(form, data=d)))
     which(is.na(s$coefficients))
 
 }
 
 
-form <- as.formula(paste('log(left_astigmatism) ~', paste(covariates3,collapse=' + ')))
+form <- as.formula(paste('log(left_corneal_astigmatism) ~', paste(covariates3,collapse=' + ')))
 
 s <- summary(m <- lm(form, data=d))
 
@@ -205,40 +205,40 @@ d.cont<-d[,continuous.factors]
 d.cont <- d.cont[,-which(colVar(d.cont)==0)]
 
 # left astigmatism
-X.cont.left <- do.call('rbind',lapply(colnames(d.cont), function(x) {univariate('left_astigmatism',x)}))
+X.cont.left <- do.call('rbind',lapply(colnames(d.cont), function(x) {univariate('left_corneal_astigmatism',x)}))
 X.cont.left$var <- as.character(X.cont.left$var)
 X.cont.left <- X.cont.left[which(X.cont.left$pvalue < bonferroni),] 
 X.cont.left$Description <- dict[X.cont.left$var,'Description']
-xx <- univariate('left_astigmatism','age')
+xx <- univariate('left_corneal_astigmatism','age')
 xx$Description <- 'age'
 X.cont.left <- rbind(X.cont.left,xx)
 head(X.cont.left<-X.cont.left[order(abs(X.cont.left$pvalue)),])
-write.csv(X.cont.left,file='left_astigmatism-univariate-continuous.csv',row.names=FALSE)
+write.csv(X.cont.left,file='left_corneal_astigmatism-univariate-continuous.csv',row.names=FALSE)
 
 
 # right astigmatism
-X.cont.right <- do.call('rbind',lapply(colnames(d.cont), function(x) {univariate('right_astigmatism',x)}))
+X.cont.right <- do.call('rbind',lapply(colnames(d.cont), function(x) {univariate('right_corneal_astigmatism',x)}))
 X.cont.right$var <- as.character(X.cont.right$var)
 X.cont.right <- X.cont.right[which(X.cont.right$pvalue < bonferroni),] 
 X.cont.right$Description <- dict[X.cont.right$var,'Description']
-xx <- univariate('right_astigmatism','age')
+xx <- univariate('right_corneal_astigmatism','age')
 xx$Description <- 'age'
 X.cont.right <- rbind(X.cont.right,xx)
 head(X.cont.right<-X.cont.right[order(abs(X.cont.right$pvalue)),])
-write.csv(X.cont.right,file='right_astigmatism-univariate-continuous.csv',row.names=FALSE)
+write.csv(X.cont.right,file='right_corneal_astigmatism-univariate-continuous.csv',row.names=FALSE)
 
 
 
 
 X2 <- rbind(
-univariate('left_astigmatism','age'),
-univariate('left_astigmatism','gender'),
-univariate('left_astigmatism','height'),
-univariate('left_astigmatism','weight'),
-univariate('left_astigmatism','iop'),
-univariate('left_astigmatism','corrected_visual_acuity'),
-univariate('left_astigmatism','crf'),
-univariate('left_astigmatism','ethnicity')
+univariate('left_corneal_astigmatism','age'),
+univariate('left_corneal_astigmatism','gender'),
+univariate('left_corneal_astigmatism','height'),
+univariate('left_corneal_astigmatism','weight'),
+univariate('left_corneal_astigmatism','iop'),
+univariate('left_corneal_astigmatism','corrected_visual_acuity'),
+univariate('left_corneal_astigmatism','crf'),
+univariate('left_corneal_astigmatism','ethnicity')
 )
 
 
@@ -264,23 +264,23 @@ categorical.factors <- intersect(categorical.factors,colnames(d.cat))
 
 X.cat <- data.frame()
 for (x in categorical.factors) {
-X.cat <- rbind(X.cat,univariate.cat('left_astigmatism',x))
+X.cat <- rbind(X.cat,univariate.cat('left_corneal_astigmatism',x))
 }
 X.cat$var <- as.character(X.cat$var)
 X.cat <- X.cat[which(X.cat$pvalue < bonferroni),] 
 X.cat$Description <- dict[X.cat$var,'Description']
 head(X.cat<-X.cat[order(abs(X.cat$pvalue)),])
-write.csv(X.cat,file='left_astigmatism-univariate-categorical.csv',row.names=FALSE)
+write.csv(X.cat,file='left_corneal_astigmatism-univariate-categorical.csv',row.names=FALSE)
 
 X.cat <- data.frame()
 for (x in categorical.factors) {
-X.cat <- rbind(X.cat,univariate.cat('right_astigmatism',x))
+X.cat <- rbind(X.cat,univariate.cat('right_corneal_astigmatism',x))
 }
 X.cat$var <- as.character(X.cat$var)
 X.cat <- X.cat[which(X.cat$pvalue < bonferroni),] 
 X.cat$Description <- dict[X.cat$var,'Description']
 head(X.cat<-X.cat[order(abs(X.cat$pvalue)),])
-write.csv(X.cat,file='right_astigmatism-univariate-categorical.csv',row.names=FALSE)
+write.csv(X.cat,file='right_corneal_astigmatism-univariate-categorical.csv',row.names=FALSE)
 
 
 
@@ -288,8 +288,8 @@ write.csv(X.cat,file='right_astigmatism-univariate-categorical.csv',row.names=FA
 # random forest imputation
 
 i <- sample(1:nrow(d),nrow(d)*.25)
-imp <- rfImpute(y=d[i,'left_astigmatism'],x=d[i,covariates])
-colnames(imp) <- c("left_astigmatism", "f.21003.0.0", "f.34.0.0", "f.5096.0.0", "f.5292.0.0", "f.5089.0.0", "f.1050.0.0", "f.1060.0.0", "f.5206.0.0", "f.50.0.0", "f.4079.0.0", "f.4080.0.0", "f.4196.0.0", "f.5208.0.0", "f.21021.0.0", "f.20023.0.0", "f.5163.0.0", "f.5156.0.0", "f.5111.0.0", "f.23105.0.0", "f.23098.0.0", "age", "gender", "height", "weight")
+imp <- rfImpute(y=d[i,'left_corneal_astigmatism'],x=d[i,covariates])
+colnames(imp) <- c("left_corneal_astigmatism", "f.21003.0.0", "f.34.0.0", "f.5096.0.0", "f.5292.0.0", "f.5089.0.0", "f.1050.0.0", "f.1060.0.0", "f.5206.0.0", "f.50.0.0", "f.4079.0.0", "f.4080.0.0", "f.4196.0.0", "f.5208.0.0", "f.21021.0.0", "f.20023.0.0", "f.5163.0.0", "f.5156.0.0", "f.5111.0.0", "f.23105.0.0", "f.23098.0.0", "age", "gender", "height", "weight")
 X <- d
 X[i,colnames(imp)]<-imp
 
@@ -299,7 +299,7 @@ covariates <- dict[which(dict$Description %in% c('Age started wearing glasses or
 covariates <- unique(grep('.0.0$',covariates,value=TRUE))
 
 
-s <- summary(lm(as.formula(paste('log(right_astigmatism) ~', paste(covariates,collapse=' + '))),data=d))
+s <- summary(lm(as.formula(paste('log(right_corneal_astigmatism) ~', paste(covariates,collapse=' + '))),data=d))
 
 # remove measurements with NA coefficient
 #print(setdiff(left.cont.covariates, names((s$left.cont.coefficients[,1]))))
@@ -307,7 +307,7 @@ s <- summary(lm(as.formula(paste('log(right_astigmatism) ~', paste(covariates,co
 
 
 covariates <- c('age','gender','ethnicity_code','f.2217.0.0')
-s <- summary(lm(as.formula(paste('log(right_astigmatism) ~', paste(covariates,collapse=' + '))),data=d))
+s <- summary(lm(as.formula(paste('log(right_corneal_astigmatism) ~', paste(covariates,collapse=' + '))),data=d))
 
 
 

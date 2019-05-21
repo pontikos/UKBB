@@ -260,22 +260,6 @@ d[,'atopy']<-0
 d[which(d[,'f.6152.0.0']==9),'atopy']<-1
 
 
-# Ethnicity: 21000.0.0
-table(d[,'f.21000.0.0'])
-
-white <- grep('^1', as.character(d[,'f.21000.0.0']))
-mixed <- grep('^2', as.character(d[,'f.21000.0.0']))
-asian <- grep('^3', as.character(d[,'f.21000.0.0']))
-black <- grep('^4', as.character(d[,'f.21000.0.0']))
-chinese <- grep('^5', as.character(d[,'f.21000.0.0']))
-
-d[white,'ethnicity'] <- 1
-d[mixed,'ethnicity'] <- 2
-d[asian,'ethnicity'] <- 3
-d[black,'ethnicity'] <- 4
-d[chinese,'ethnicity'] <- 5
-d[,'ethnicity'] <- as.factor(d[,'ethnicity'])
-
 
 # Gender:  31.0.0
 # female 0

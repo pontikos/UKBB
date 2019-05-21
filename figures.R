@@ -3,6 +3,18 @@ library(beeswarm)
 trans <- function(x) log(x)
 
 
+x <- d$right_3mm_corneal_astigmatism
+
+y <- list('0.00-0.49'=length(which(0 <= x & x < 0.49)),'0.50-0.99'=length(which(0.5 <= x & x < 0.99)),'1.00-1.49'=length(which(1.00 <= x & x < 1.49)),'1.50-1.99'=length(which(1.5 <= x & x < 1.99)),'2.00-2.49'=length(which(2.00 <= x & x < 2.49)),'2.50-2.99'=length(which(2.50 <= x & x < 2.99)),'3.00-3.49'=length(which(3.00 <= x & x < 3.49)),'>4.00'=length(which(x>4.00)))
+y<-data.frame(names=as.character(names(y)),values=as.numeric(y))
+y$names <- as.character(y$names)
+
+#barplot(100*as.numeric(y)/sum(as.numeric(y)),names.arg = names(y),ylab="Prevalence (%)",xlab="Corneal Astigmatism (D)")
+
+ggplot(data=y, aes(x=y$names, y=100*values/sum(y$values))) +  geom_bar(stat="identity") + theme_bw() + theme(axis.text.x=element_text(angle=45,hjust=1),text=element_text(size=20)) + scale_x_discrete(limits=y$names) + xlab('Corneal Astigmatism (D)') + ylab("Prevalence (%)") +  theme(panel.grid.major.x = element_blank() ,  panel.grid.major.y = element_line( size=.1, color="black" )) + scale_y_continuous(breaks=seq(0,40,5))
+
+
+
 png('ethnicity_ease_skin_tanning.png')
 plot( f.1727.0.0 ~ ethnicity_code,data=d)
 dev.off()
@@ -112,6 +124,15 @@ png('age-right.png')
 plot(log(right_astigmatism) ~ age, data=d, main='age right')
 abline(lm(log(right_astigmatism) ~ age, data=d), col='red')
 dev.off()
+
+
+# age vs corneal astigmatism hexbin
+h <- hexbin(data.frame(right_corneal_astigmatism=log(d$right_corneal_astigmatism),age=d$age))
+plot(h)
+h <- hexbin(data.frame(left_corneal_astigmatism=log(d$left_corneal_astigmatism),age=d$age))
+plot(h)
+dev.off()
+
 
 
 # alchohol intake f.1558.0.0
@@ -384,7 +405,9 @@ boxplot(d$we)
 plot(density(na.omit(d$right_logMAR)))
 
 # Figure eye condition vs corneal astigmatism
-x <- list(astigmatism=log(d[which(d$astigmatism.eye=='R'),'right_corneal_astigmatism']),
+x <- list(
+     all=log(d[,'right_corneal_astigmatism']),
+     astigmatism=log(d[which(d$astigmatism.eye=='R'),'right_corneal_astigmatism']),
      myopia=log(d[which(d$myopia.eye=='R'),'right_corneal_astigmatism']),
      hypermetropia=log(d[which(d$hypermetropia.eye=='R'),'right_corneal_astigmatism']),
      presbyopia=log(d[which(d$presbyopia.eye=='R'),'right_corneal_astigmatism']),
@@ -393,7 +416,9 @@ x <- list(astigmatism=log(d[which(d$astigmatism.eye=='R'),'right_corneal_astigma
      cataract=log(d[which(d$cataract.eye=='R'),'right_corneal_astigmatism']))
 par(mar=c(7,5,1,1),mfrow=c(1,2))
 boxplot(x[names(x)[order(unlist(lapply(x,median)))]],las=2,main='right',ylab='log(3mm corneal astigmatism)')
-x <- list(astigmatism=log(d[which(d$astigmatism.eye=='L'),'left_corneal_astigmatism']),
+x <- list(
+     all=log(d[,'left_corneal_astigmatism']),
+     astigmatism=log(d[which(d$astigmatism.eye=='L'),'left_corneal_astigmatism']),
      myopia=log(d[which(d$myopia.eye=='L'),'left_corneal_astigmatism']),
      hypermetropia=log(d[which(d$hypermetropia.eye=='L'),'left_corneal_astigmatism']),
      presbyopia=log(d[which(d$presbyopia.eye=='L'),'left_corneal_astigmatism']),
@@ -418,6 +443,101 @@ x <- list(astigmatism=(d[which(d$astigmatism.eye=='L'),'left_mean_corneal_power'
           amblyopia=(d[which(d$amblyopia.eye=='L'),'left_mean_corneal_power']),
           strabismus=(d[which(d$strabismus.eye=='L'),'left_mean_corneal_power']))
 boxplot(x[names(x)[order(unlist(lapply(x,median)))]],las=2,main='left')
+
+
+# Figure eye condition vs age 
+x <- list(
+     all=(d[,'age']),
+     astigmatism=(d[which(d$astigmatism.eye=='R'),'age']),
+     myopia=(d[which(d$myopia.eye=='R'),'age']),
+     hypermetropia=(d[which(d$hypermetropia.eye=='R'),'age']),
+     presbyopia=(d[which(d$presbyopia.eye=='R'),'age']),
+     amblyopia=(d[which(d$amblyopia.eye=='R'),'age']),
+     strabismus=(d[which(d$strabismus.eye=='R'),'age']),
+     cataract=(d[which(d$cataract.eye=='R'),'age']))
+par(mar=c(7,5,1,1),mfrow=c(1,2))
+boxplot(x[names(x)[order(unlist(lapply(x,median)))]],las=2,main='right',ylab='(age)')
+x <- list(
+     all=(d[,'age']),
+     astigmatism=(d[which(d$astigmatism.eye=='L'),'age']),
+     myopia=(d[which(d$myopia.eye=='L'),'age']),
+     hypermetropia=(d[which(d$hypermetropia.eye=='L'),'age']),
+     presbyopia=(d[which(d$presbyopia.eye=='L'),'age']),
+     amblyopia=(d[which(d$amblyopia.eye=='L'),'age']),
+     strabismus=(d[which(d$strabismus.eye=='L'),'age']),
+     cataract=(d[which(d$cataract.eye=='L'),'age']))
+boxplot(x[names(x)[order(unlist(lapply(x,median)))]],las=2,main='left')
+
+
+
+# Figure eye condition vs age completed education
+x <- list(
+     all=(d[,'age_completed_education']),
+     astigmatism=(d[which(d$astigmatism.eye=='R'),'age_completed_education']),
+     myopia=(d[which(d$myopia.eye=='R'),'age_completed_education']),
+     hypermetropia=(d[which(d$hypermetropia.eye=='R'),'age_completed_education']),
+     presbyopia=(d[which(d$presbyopia.eye=='R'),'age_completed_education']),
+     amblyopia=(d[which(d$amblyopia.eye=='R'),'age_completed_education']),
+     strabismus=(d[which(d$strabismus.eye=='R'),'age_completed_education']),
+     cataract=(d[which(d$cataract.eye=='R'),'age_completed_education']))
+par(mar=c(7,5,1,1),mfrow=c(1,2))
+boxplot(x[names(x)[order(unlist(lapply(x,median)))]],las=2,main='right',ylab='(age completed education)')
+x <- list(
+     all=(d[,'age_completed_education']),
+     astigmatism=(d[which(d$astigmatism.eye=='L'),'age_completed_education']),
+     myopia=(d[which(d$myopia.eye=='L'),'age_completed_education']),
+     hypermetropia=(d[which(d$hypermetropia.eye=='L'),'age_completed_education']),
+     presbyopia=(d[which(d$presbyopia.eye=='L'),'age_completed_education']),
+     amblyopia=(d[which(d$amblyopia.eye=='L'),'age_completed_education']),
+     strabismus=(d[which(d$strabismus.eye=='L'),'age_completed_education']),
+     cataract=(d[which(d$cataract.eye=='L'),'age_completed_education']))
+boxplot(x[names(x)[order(unlist(lapply(x,median)))]],las=2,main='left')
+
+# Figure eye condition vs right spherical power
+x <- list(
+     all=(d[,'right_spherical_power']),
+     astigmatism=(d[which(d$astigmatism.eye=='R'),'right_spherical_power']),
+     myopia=(d[which(d$myopia.eye=='R'),'right_spherical_power']),
+     hypermetropia=(d[which(d$hypermetropia.eye=='R'),'right_spherical_power']),
+     presbyopia=(d[which(d$presbyopia.eye=='R'),'right_spherical_power']),
+     amblyopia=(d[which(d$amblyopia.eye=='R'),'right_spherical_power']),
+     strabismus=(d[which(d$strabismus.eye=='R'),'right_spherical_power']),
+     cataract=(d[which(d$cataract.eye=='R'),'right_spherical_power']))
+par(mar=c(7,5,1,1),mfrow=c(1,2))
+boxplot(x[names(x)[order(unlist(lapply(x,median)))]],las=2,main='right',ylab='(right spherical power)')
+x <- list(
+     all=(d[,'left_spherical_power']),
+     astigmatism=(d[which(d$astigmatism.eye=='L'),'left_spherical_power']),
+     myopia=(d[which(d$myopia.eye=='L'),'left_spherical_power']),
+     hypermetropia=(d[which(d$hypermetropia.eye=='L'),'left_spherical_power']),
+     presbyopia=(d[which(d$presbyopia.eye=='L'),'left_spherical_power']),
+     amblyopia=(d[which(d$amblyopia.eye=='L'),'left_spherical_power']),
+     strabismus=(d[which(d$strabismus.eye=='L'),'left_spherical_power']),
+     cataract=(d[which(d$cataract.eye=='L'),'left_spherical_power']))
+boxplot(x[names(x)[order(unlist(lapply(x,median)))]],las=2,main='left')
+
+
+# qualifications vs astigmatism
+par(mar=c(7,5,1,1),mfrow=c(1,2))
+boxplot(log(left_corneal_astigmatism) ~ qualifications, d, las=2)
+boxplot(log(right_corneal_astigmatism) ~ qualifications, d, las=2 )
+
+# age completed full-time education vs corneal astigmatism
+
+h <- hexbin(data.frame(left_corneal_astigmatism=log(d$left_corneal_astigmatism) , age_completed_full_time_education=d$age_completed_full_time_education))
+plot(h)
+dev.off()
+
+# age completed full-time education vs age
+h <- hexbin(data.frame(age=(d$age) , age_completed_full_time_education=d$age_completed_full_time_education))
+plot(h)
+dev.off()
+
+#boxplot(log(d$left_corneal_astigmatism) ~ d$age_completed_full_time_education)
+
+
+
+
 
 library(ggplot2)
 # Basic violin plot
@@ -447,3 +567,79 @@ table(d$myopia.eye!='N',d$ethnicity)
 
 sort(unlist(as.list(by(d$right_corneal_astigmatism, d$qualifications, mean))))
 boxplot(log(right_corneal_astigmatism) ~ qualifications,data=d,las=2)
+
+boxplot(d$age_started_wearing_glasses_or_contact_lenses ~ d$right.amblyopia.eye)
+
+d.RE.amblyopia <- d[which(d$right.amblyopia.eye==1),]
+d.LE.amblyopia <- d[which(d$left.amblyopia.eye==1),]
+
+hist(d.RE.amblyopia$right_3mm_corneal_astigmatism)
+
+hist(d.RE.amblyopia$age_started_wearing_glasses_or_contact_lenses)
+
+plot(density(log(d.RE.amblyopia$right_3mm_corneal_astigmatism)),col='gray')
+lines(density(log(d.RE.amblyopia[which(d.RE.amblyopia$age_started_wearing_glasses_or_contact_lenses<30),'right_3mm_corneal_astigmatism'])),col='blue')
+lines(density(log(d.RE.amblyopia[which(d.RE.amblyopia$age_started_wearing_glasses_or_contact_lenses>=30),'right_3mm_corneal_astigmatism'])),col='red')
+
+which(d.RE.amblyopia$right_3mm_corneal_astigmatism>5)
+
+
+par(mar=c(10,5,1,1),mfrow=c(1,1))
+boxplot(d$age ~ d$alcohol_intake,ylab='age',las=2)
+
+
+x <- d$age
+#boxplot(sort((c(by(x,d$alcohol_intake,median))),las=2)
+
+library(sjPlot)
+library(sjmisc)
+library(ggplot2)
+theme_set(theme_sjplot())
+
+d$gender <- to_factor(d$gender)
+d$alcohol_intake <- to_factor(d$alcohol_intake)
+m <- lm(log(right_corneal_astigmatism) ~ gender*age*alcohol_intake,d)
+plot_model(m, type = "pred", terms = c("age","gender","alcohol_intake [daily or almost daily, three four times a week, once twice a week, one to three times a month, special occasions, never]"))
+m <- lm(log(left_corneal_astigmatism) ~ gender*age*alcohol_intake,d)
+plot_model(m, type = "pred", terms = c("age","gender","alcohol_intake [daily or almost daily, three four times a week, once twice a week, one to three times a month, special occasions, never]"))
+dev.off()
+
+d$qualifications <- to_factor(d$qualifications)
+m <- lm(log(right_corneal_astigmatism) ~ age_completed_full_time_education*qualifications*age,d)
+plot_model(m, type = "pred", terms = c("age","age_completed_full_time_education [15, 16, 17, 18]","qualifications [CSEs or equivalent, None of the above, Prefer not to answer]"))
+dev.off()
+
+d$right_eye_astigmatism <- to_factor(d$astigmatism.eye=='R')
+m <- lm(log(right_corneal_astigmatism) ~ age_completed_full_time_education*right_eye_astigmatism*age,d)
+plot_model(m, type = "pred", terms = c("age","right_eye_astigmatism", "age_completed_full_time_education [15, 16, 17, 18]"))
+m <- lm(log(right_corneal_astigmatism) ~ age_completed_full_time_education*age,d)
+plot_model(m, type = "pred", terms = c("age", "age_completed_full_time_education [15, 16, 17, 18]"))
+d$ethnicity <- to_factor(d$ethnicity)
+m <- lm(log(right_corneal_astigmatism) ~ ethnicity*age_completed_full_time_education*age,d)
+plot_model(m, type = "pred", terms = c("ethnicity", "age", "age_completed_full_time_education [15, 16, 17, 18]"))
+
+m <- lm(log(right_corneal_astigmatism) ~ age*ethnicity*gender,d)
+plot_model(m, type = "pred", terms = c("age", "ethnicity [white, asian, black]", "gender"))
+m <- lm(log(left_corneal_astigmatism) ~ age*ethnicity*gender,d)
+plot_model(m, type = "pred", terms = c("age", "ethnicity [white, asian, black]", "gender"))
+dev.off()
+
+d$skin_colour <- to_factor(d$skin_colour)
+m <- lm(log(right_corneal_astigmatism) ~ age*skin_colour*gender,d)
+plot_model(m, type = "pred", terms = c("age", "skin_colour [very fair, fair, light olive, brown]", "gender"))
+m <- lm(log(left_corneal_astigmatism) ~ age*skin_colour*gender,d)
+plot_model(m, type = "pred", terms = c("age", "skin_colour [very fair, fair, light olive, brown]", "gender"))
+dev.off()
+
+d$skin_colour <- to_factor(d$skin_colour)
+m <- lm(log(right_corneal_astigmatism) ~ age_completed_full_time_education*skin_colour*gender,d)
+plot_model(m, type = "pred", terms = c("age_completed_full_time_education", "skin_colour [very fair, fair, light olive, brown]", "gender"))
+m <- lm(log(left_corneal_astigmatism) ~ age_completed_full_time_education*skin_colour*gender,d)
+plot_model(m, type = "pred", terms = c("age_completed_full_time_education", "skin_colour [very fair, fair, light olive, brown]", "gender"))
+dev.off()
+
+
+
+
+
+

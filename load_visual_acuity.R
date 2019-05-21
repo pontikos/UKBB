@@ -1,7 +1,7 @@
 #Field ID	Description
 #20057	Reason for skipping visual acuity (left)
 #20262	Myopia diagnosis
-d$myopia_diagnosis <- list('2'='highly myopic','1'='moderate/low myopia','0'='non-myopic')[as.character(d$f.20262.0.0)]
+#d$myopia_diagnosis <- list('2'='highly myopic','1'='moderate/low myopia','0'='non-myopic')[as.character(d$f.20262.0.0)]
 #20261	avMSE
 #20056	Reason for skipping visual acuity (right)
 #6075	Glasses worn/required (left)

@@ -18,6 +18,7 @@ d$age_started_wearing_glasses_or_contact_lenses.lt.30 <- as.numeric(d$f.2217.0.0
 #7	Other eye condition
 #-1	Do not know
 #-3	Prefer not to answer
+d$reason_for_glasses_or_contact_lenses <- d$f.6147.0.0
 
 # 5843	Which eye(s) affected by myopia (short sight)
 # Data-Field 5843
@@ -79,11 +80,16 @@ d$left.amblyopia.eye <- as.numeric(d$amblyopia.eye %in% c('L','B'))
 d$right.amblyopia.eye <- as.numeric(d$amblyopia.eye %in% c('R','B')) 
 #5877	Which eye(s) affected by other eye condition
 #5934	Which eye(s) affected by other serious eye condition
-2227	Other eye problems
+#2227	Other eye problems
 #6148	Eye problems/disorders
 d$eye_problems_disorders <- ifelse(is.na(d$f.6148.0.0),'-1',as.character(d$f.6148.0.0))
 d$eye_problems_disorders <- unlist(list('1'="Diabetes related eye disease",'2'="Glaucoma",'3'="Injury or trauma resulting in loss of vision",'4'="Cataract",'5'="Macular degeneration",'6'="Other serious eye condition",'-7'="None of the above",'-3'="Prefer not to answer",'-1'="Do not know")[d$eye_problems_disorders])
-5890	Which eye(s) affected by diabetes-related eye disease
+#5890	Which eye(s) affected by diabetes-related eye disease
+d$diabetes.eye <- d$f.5890.0.0
+d$diabetes.eye[which(d$diabetes.eye==1)] <- 'R'
+d$diabetes.eye[which(d$diabetes.eye==2)] <- 'L'
+d$diabetes.eye[which(d$diabetes.eye==3)] <- 'B'
+d$diabetes.eye[which(is.na(d$diabetes.eye))] <- 'N'
 #6119	Which eye(s) affected by glaucoma
 d$glaucoma.eye <- d$f.6119.0.0
 d$glaucoma.eye[which(d$glaucoma.eye==1)] <- 'R'
@@ -106,4 +112,8 @@ d$age_glaucoma_diagnosed<-d$f.4689.0.0
 #4700	Age cataract diagnosed
 #5923	Age macular degeneration diagnosed
 #5945	Age other serious eye condition diagnosed
+
+data.frame( left.eye=c( nrow(d[which(d$astigmatism.eye=='L'),]), nrow(d[which(d$myopia.eye=='L'),]), nrow(d[which(d$hypermetropia.eye=='L'),]), nrow(d[which(d$presbyopia.eye=='L'),]), nrow(d[which(d$amblyopia.eye=='L'),]), nrow(d[which(d$strabismus.eye=='L'),]), nrow(d[which(d$cataract.eye=='L'),])), right.eye=c( nrow(d[which(d$astigmatism.eye=='R'),]), nrow(d[which(d$myopia.eye=='R'),]), nrow(d[which(d$hypermetropia.eye=='R'),]), nrow(d[which(d$presbyopia.eye=='R'),]), nrow(d[which(d$amblyopia.eye=='R'),]), nrow(d[which(d$strabismus.eye=='R'),]), nrow(d[which(d$cataract.eye=='R'),])), row.names=c('astigmatism','myopia','presbyopia','hypermetropia','amblyopia','strabismus','cataract'))
+
+
 

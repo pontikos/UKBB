@@ -18,154 +18,43 @@ data1[,'yoa1'] <- as.numeric(unlist(lapply(strsplit(data1[,'f.53.0.0'], '-'),'[[
 data1['age'] <- data1[,'yoa1']-data1[,'yob']
 data1 ->d 
 
-count_ukbb_keratometry <- length(which(!is.na(data1$f.5132.0.0)))
+source('scripts/UKBB/load_autorefraction.R')
+source('scripts/UKBB/load_eyesight.R')
+source('scripts/UKBB/load_sociodemographic.R')
+source('scripts/UKBB/load_alcohol.R')
+source('scripts/UKBB/load_smoking.R')
+source('scripts/UKBB/load_earylife.R')
 
-count_ukbb_participants <- ukbb_total_number_of_participants <- nrow(data1)
-count_ukbb_keratoconus <- length(grep('H186',as.character(data1$f.41202.0.0)))
+# EXCLUDE:  
 
-count_keratoconus <- length(grep('H186',as.character(d$f.41202.0.0)))
+# Ever had eye surgery 5181-0.0 
+# Ever had cataract surgery 5324-0.0 
+# Ever had laser refractive 5325-0.0 
+# Ever had glaucoma surgery 5326-0.0 
+# Ever had corneal graft 5328-0.0 
+# Loss vision trauma 5430-0.0 
 
-sum(sapply(grep('f.41202.0',colnames(data1),value=TRUE), function(col){length(which(data1[,col]=='H185'))}))
-
-d <- d[,-which(colSums(is.na(d))>(nrow(d)-4))]
-
-# 6148	Eye problems/disorders
-d$eye_problems <- d$f.6148.0.0
-# no eye problems
-#which(d$eye_problems==-7)
-
-d$diagnoses <- d$f.41202.0.0
-
-# 4700	Age cataract diagnosed
-d$age.cataract.diagnosed <- d$f.4700.0.0
-
-# 3mm weak meridian (right)
-# visit 0 (2006-2010) astigmatism
-
-# visit 1 (2012-2013) astigmatism
-#d$f.5132.1 <- rowMeans(d[,c('f.5132.1.0','f.5132.1.1','f.5132.1.2','f.5132.1.3','f.5132.1.4','f.5132.1.5')],na.rm=TRUE)
-# 3mm weak meridian (right)
-#d$f.5132 <- ifelse(is.na(d$f.5132.0), d$f.5132.1, d$f.5132.0)
-# 3mm strong meridian (right): visit 0 (2006-2010) astigmatism
-#d$f.5099.0 <- rowMeans(d[,c("f.5099.0.0", "f.5099.0.1", "f.5099.0.2", "f.5099.0.3", "f.5099.0.4", "f.5099.0.5")],na.rm=T)
-# visit 1 (2012-2013) astigmatism
-#d$f.5099.1 <- rowMeans(d[,c("f.5099.1.0", "f.5099.1.1", "f.5099.1.2", "f.5099.1.3", "f.5099.1.4", "f.5099.1.5")],na.rm=T)
-# 3mm strong meridian (right)
-#d$f.5099 <- ifelse(is.na(d$f.5099.0), d$f.5099.1, d$f.5099.0)
-# Astigmatism defined as:
-# Astigmatism 3mm right =  3mm strong meridian (right) 5132-0.0 minus  3mm weak meridian (right) 5099-0.0 ie. ((5132-0.0) – (5099-0.0))  
-#print(dim(d <- d[which(d$right_corneal_astigmatism>0),]))
-
-# 3mm strong meridian (left): visit 0 (2006-2010) astigmatism
-# array indices run from 0 to 5
-d$f.5135.0 <- rowMeans(d[,c("f.5135.0.0", "f.5135.0.1", "f.5135.0.2", "f.5135.0.3", "f.5135.0.4", "f.5135.0.5")],na.rm=T)
-# visit 1 (2012-2013) astigmatism
-#d$f.5135.1 <- rowMeans(d[,c("f.5135.1.0", "f.5135.1.1", "f.5135.1.2", "f.5135.1.3", "f.5135.1.4", "f.5135.1.5")],na.rm=T)
-# Use whatever visit is available.
-#d$left_3mm_strong_meridian <- ifelse(is.na(d$f.5135.0), d$f.5135.1, d$f.5135.0)
-
-
-# visit 0 (2006-2010) astigmatism . Average measurements per visit for increased accuracy.
-#d$f.5096.0 <- rowMeans(d[,c('f.5096.0.0','f.5096.0.1','f.5096.0.2','f.5096.0.3','f.5096.0.4','f.5096.0.5')],na.rm=TRUE)
-# visit 1 (2012-2013) astigmatism . Average measurements per visit for increased accuracy.
-#d$f.5096.1 <- rowMeans(d[,c('f.5096.1.0','f.5096.1.1','f.5096.1.2','f.5096.1.3','f.5096.1.4','f.5096.1.5')],na.rm=TRUE)
-# Use whatever visit is available.
-#d$left_3mm_weak_meridian <- ifelse(is.na(d$f.5096.0), d$f.5096.1, d$f.5096.0)
-
-
-# 5111	3mm asymmetry angle (left)
-# 5108	3mm asymmetry angle (right)
-d$left_3mm_asymmetry_angle <- d$f.5111.0.0
-d$right_3mm_asymmetry_angle <- d$f.5108.0.0
-
-
-# 3mm cylindrical power
-d$right_3mm_cylindrical_power <- d$f.5116.0.0
-d$left_3mm_cylindrical_power <- d$f.5119.0.0
-# 3mm cylindrical power angle
-d$left_3mm_cylindrical_power_angle <- d$f.5112.0.0
-d$right_3mm_cylindrical_power_angle <- d$f.5115.0.0
-# Spherical power 
-d$right_spherical_power <- d$f.5084.0.0
-d$left_spherical_power <- d$f.5085.0.0
-# Vertex distance
-d$right_vertex_distance <- d$f.5215.0.0
-d$left_vertex_distance <- d$f.5274.0.0
-
-
-# 4689	Age glaucoma diagnosed
-d$age_glaucoma_diagnosed <- d$f.4689.0.0
-# 5430	Age when loss of vision due to injury or trauma diagnosed
-# 4700	Age cataract diagnosed
-# 6119	Which eye(s) affected by glaucoma
-d$glaucoma <- d$f.6119.0.0
-
-
-d$right_mean_corneal_power <- (d[,'right_3mm_strong_meridian'] + d[,'right_3mm_weak_meridian'])/2
-d$left_mean_corneal_power <- (d[,'left_3mm_strong_meridian'] + d[,'left_3mm_weak_meridian'])/2
-d$right_3mm_mean_corneal_power <- (d$right_3mm_strong_meridian + d$right_3mm_weak_meridian)/2
-d$left_3mm_mean_corneal_power <- (d$left_3mm_strong_meridian + d$left_3mm_weak_meridian)/2
-
-
-d$right_spherical_power <- d$f.5084.0.0
-d$left_spherical_power <- d$f.5085.0.0
-d$right_3mm_spherical_equivalent <- d$right_spherical_equivalent <- d$right_spherical_power + .5 * d$right_3mm_cylindrical_power
-d$left_3mm_spherical_equivalent <- d$left_spherical_equivalent <- d$left_spherical_power + .5 * d$left_3mm_cylindrical_power
-
-
-# axis of astigmatism
-#5107 3mm strong meridian angle (right) #5100 3mm weak meridian angle (right)
-d$right_3mm_strong_meridian_angle<-d$f.5107.0.0
-d$right_3mm_weak_meridian_angle<-d$f.5100.0.0
-d$right_axis_of_astigmatism <- d$right_3mm_strong_meridian_angle-d$right_3mm_weak_meridian_angle
-#5104 3mm strong meridian angle (left) #5103 3mm weak meridian angle (left)
-d$left_3mm_strong_meridian_angle<-d$f.5104.0.0
-d$left_3mm_weak_meridian_angle<-d$f.5103.0.0
-d$left_axis_of_astigmatism <- d$left_3mm_strong_meridian_angle-d$left_3mm_weak_meridian_angle
-
-d$pos_right_axis_of_astigmatism <- d$right_axis_of_astigmatism>0
-d$pos_left_axis_of_astigmatism <- d$left_axis_of_astigmatism>0
-
-cat('Participants in UKBB:\n')
-print(dim(d))
-
-i <- which(!is.na(d$left_corneal_astigmatism)&!is.na(d$right_corneal_astigmatism))
-cat('Participants with astigmatism measures available:\n')
-print(dim(d <- d[i,]))
-
-d[,'right_KC_proxy1'] <- 0
-d[which(d[,'right_mean_corneal_power']>48&d$right_3mm_asymmetry_index_for_irregular_astigmatism_level>1) ,'right_KC_proxy1'] <- 1
-d[,'right_KC_proxy2'] <- 0
-d[which(d[,'right_mean_corneal_power']>49&d$right_3mm_asymmetry_index_for_irregular_astigmatism_level>1),'right_KC_proxy2'] <- 1
-d[,'right_KC_proxy3'] <- 0
-d[which(d[,'right_mean_corneal_power']>50&d$right_3mm_asymmetry_index_for_irregular_astigmatism_level>1),'right_KC_proxy3'] <- 1
-count_right_KC_proxy1 <- length(which(d$right_KC_proxy1==1))
-pct_right_KC_proxy1 <- 100*count_right_KC_proxy1/nrow(d)
-count_right_KC_proxy2 <- length(which(d$right_KC_proxy2==1))
-pct_right_KC_proxy2 <- 100*count_right_KC_proxy2/nrow(d)
-count_right_KC_proxy3 <- length(which(d$right_KC_proxy3==1))
-pct_right_KC_proxy3 <- 100*count_right_KC_proxy3/nrow(d)
-
-d[,'left_KC_proxy1'] <- 0
-d[which(d[,'left_mean_corneal_power']>48&d$left_3mm_asymmetry_index_for_irregular_astigmatism_level>1) ,'left_KC_proxy1'] <- 1
-d[,'left_KC_proxy2'] <- 0
-d[which(d[,'left_mean_corneal_power']>49&d$left_3mm_asymmetry_index_for_irregular_astigmatism_level>1),'left_KC_proxy2'] <- 1
-d[,'left_KC_proxy3'] <- 0
-d[which(d[,'left_mean_corneal_power']>50&d$left_3mm_asymmetry_index_for_irregular_astigmatism_level>1),'left_KC_proxy3'] <- 1
-
-both_KC_proxy1_count <- length(which(d$right_KC_proxy1&d$left_KC_proxy1))
-both_KC_proxy2_count <- length(which(d$right_KC_proxy2&d$left_KC_proxy2))
-both_KC_proxy3_count <- length(which(d$right_KC_proxy3&d$left_KC_proxy3))
-
-d.KC_proxy3 <- d[which(d$right_KC_proxy3&d$left_KC_proxy3),]
-
-both_ukbb_keratoconus <- d.keratoconus <- d[grep('H186',as.character(d$f.41202.0.0)),]
-
-#d.keratoconus$f.41202.0.0
-multivariable_townsend_pvalue=0
+# EXCLUSION criteria:
+# 3mm keratometry result unreliable (right)
+#d <- d[which(is.na(d[,'f.5140.0.0'])),]
+# Ever had laser refractive 5325-0.0
+#d <- d[which(is.na(d[,'f.5325.0.0'])),]
+# Ever had glaucoma surgery 5326-0.0
+#d <- d[which(is.na(d[,'f.5326.0.0'])),]
+# Ever had corneal graft 5328-0.0
+#d <- d[which(is.na(d[,'f.5328.0.0'])),]
+# Loss vision trauma 5430-0.0
+#d <- d[which(is.na(d[,'f.5430.0.0'])),]
+# Ever had eye surgery 5181-0.0
+#d <- d[which(is.na(d[,'f.5181.0.0'])|d[,'f.5181.0.0']==0),]
+# 3mm asymmetry index unreliable (right)
+#d <- d[which(is.na(d[,'f.5144.0.0'])),]
+# only keep ones with keratometry values
+#d <- d[which(!is.na(d[,'f.5132.0.0'])),]
+#d <- d[which(!is.na(d[,'f.5099.0.0'])),]
 
 # EXCLUSION criteria:  
-cat('EXCLUSION criteria:\n')
+#cat('EXCLUSION criteria:\n')
 
 #print(dim(d <- d[which(d$left_corneal_astigmatism>0),]))
 #d <- d[i,]
@@ -179,7 +68,7 @@ cat('Included/excluded:\n')
 #d <- d[which(is.na(d[,'f.5430.0.0'])),]
 
 # Ever had laser refractive 5325-0.0 
-i1 <- which(!is.na(d[,'f.5325.0.0']))
+i1 <- which(!is.na(d[,'f.5325.1.0']))
 laser_refractive_count <- length(i1)
 cat('Excluded because of laser refractive:', laser_refractive_count,'\n')
 # Ever had eye surgery 5181-0.0 
@@ -220,14 +109,164 @@ d$left_3mm_keratometry_result_unreliable <- d[,'f.5136.0.0']
 d$right_3mm_keratometry_result_unreliable <- d[,'f.5140.0.0']
 
 
-# EXCLUDE:  
 
-# Ever had eye surgery 5181-0.0 
-# Ever had cataract surgery 5324-0.0 
-# Ever had laser refractive 5325-0.0 
-# Ever had glaucoma surgery 5326-0.0 
-# Ever had corneal graft 5328-0.0 
-# Loss vision trauma 5430-0.0 
+
+count_ukbb_keratometry <- length(which(!is.na(data1$f.5132.0.0)))
+
+count_ukbb_participants <- ukbb_total_number_of_participants <- nrow(data1)
+count_ukbb_keratoconus <- length(grep('H186',as.character(data1$f.41202.0.0)))
+
+count_keratoconus <- length(grep('H186',as.character(d$f.41202.0.0)))
+
+count_keratoconus_all <- length(grep('H186',as.character(data1$f.41202.0.0)))
+
+data1[ grep('H186',as.character(data1$f.41202.0.0)), c('f.5140.0.0','f.5181.0.0','f.5144.0.0','f.5132.0.0','f.5099.0.0') ]
+
+
+sum(sapply(grep('f.41202.0',colnames(data1),value=TRUE), function(col){length(which(data1[,col]=='H185'))}))
+
+d <- d[,-which(colSums(is.na(d))>(nrow(d)-4))]
+
+# 6148	Eye problems/disorders
+d$eye_problems <- d$f.6148.0.0
+# no eye problems
+#which(d$eye_problems==-7)
+
+d$diagnoses <- d$f.41202.0.0
+
+# 4700	Age cataract diagnosed
+d$age.cataract.diagnosed <- d$f.4700.0.0
+
+# 3mm weak meridian (right)
+# visit 0 (2006-2010) astigmatism
+# visit 1 (2012-2013) astigmatism
+#d$f.5132.1 <- rowMeans(d[,c('f.5132.1.0','f.5132.1.1','f.5132.1.2','f.5132.1.3','f.5132.1.4','f.5132.1.5')],na.rm=TRUE)
+# 3mm weak meridian (right)
+# 3mm strong meridian (right): visit 0 (2006-2010) astigmatism
+#d$right_3mm_weak_meridian <- d$f.5132 <- ifelse(is.na(d$f.5132.0), d$f.5132.1, d$f.5132.0)
+d$right_3mm_strong_meridian <- d$f.5132.0 <- rowMeans(d[,c("f.5132.0.0","f.5132.0.1","f.5132.0.2","f.5132.0.3","f.5132.0.4","f.5132.0.5")],na.rm=T)
+d$right_3mm_weak_meridian <- d$f.5099.0 <- rowMeans(d[,c("f.5099.0.0", "f.5099.0.1", "f.5099.0.2", "f.5099.0.3", "f.5099.0.4", "f.5099.0.5")],na.rm=T)
+#d$f.5099.1 <- rowMeans(d[,c("f.5099.1.0", "f.5099.1.1", "f.5099.1.2", "f.5099.1.3", "f.5099.1.4", "f.5099.1.5")],na.rm=T)
+# 3mm strong meridian (right)
+#d$f.5099 <- ifelse(is.na(d$f.5099.0), d$f.5099.1, d$f.5099.0)
+
+# 3mm strong meridian (left): visit 0 (2006-2010) astigmatism
+# array indices run from 0 to 5
+d$left_3mm_strong_meridian <- d$f.5135.0 <- rowMeans(d[,c("f.5135.0.0", "f.5135.0.1", "f.5135.0.2", "f.5135.0.3", "f.5135.0.4", "f.5135.0.5")],na.rm=T)
+d$left_3mm_weak_meridian <- d$f.5096.0 <- rowMeans(d[,c("f.5096.0.0", "f.5096.0.1", "f.5096.0.2", "f.5096.0.3", "f.5135.0.4", "f.5135.0.5")],na.rm=T)
+# Use whatever visit is available.
+#d$left_3mm_strong_meridian <- ifelse(is.na(d$f.5135.0), d$f.5135.1, d$f.5135.0)
+
+# Astigmatism defined as:
+# Astigmatism 3mm right =  3mm strong meridian (right) 5132-0.0 minus  3mm weak meridian (right) 5099-0.0 ie. ((5132-0.0) – (5099-0.0))
+# 3mm astigmatism (right) = 3mm strong meridian (right) -  3mm weak meridian (right)
+d$right_3mm_astigmatism <- d$right_3mm_strong_meridian - d$right_3mm_weak_meridian
+d$left_3mm_astigmatism <- d$left_3mm_strong_meridian - d$left_3mm_weak_meridian
+
+# visit 0 (2006-2010) astigmatism . Average measurements per visit for increased accuracy.
+#d$f.5096.0 <- rowMeans(d[,c('f.5096.0.0','f.5096.0.1','f.5096.0.2','f.5096.0.3','f.5096.0.4','f.5096.0.5')],na.rm=TRUE)
+# visit 1 (2012-2013) astigmatism . Average measurements per visit for increased accuracy.
+#d$f.5096.1 <- rowMeans(d[,c('f.5096.1.0','f.5096.1.1','f.5096.1.2','f.5096.1.3','f.5096.1.4','f.5096.1.5')],na.rm=TRUE)
+# Use whatever visit is available.
+#d$left_3mm_weak_meridian <- ifelse(is.na(d$f.5096.0), d$f.5096.1, d$f.5096.0)
+
+# 5111	3mm asymmetry angle (left)
+# 5108	3mm asymmetry angle (right)
+d$left_3mm_asymmetry_angle <- d$f.5111.0.0
+d$right_3mm_asymmetry_angle <- d$f.5108.0.0
+
+
+# 3mm cylindrical power
+d$right_3mm_cylindrical_power <- d$f.5116.0.0
+d$left_3mm_cylindrical_power <- d$f.5119.0.0
+# 3mm cylindrical power angle
+d$left_3mm_cylindrical_power_angle <- d$f.5112.0.0
+d$right_3mm_cylindrical_power_angle <- d$f.5115.0.0
+# Spherical power 
+d$right_spherical_power <- d$f.5084.0.0
+d$left_spherical_power <- d$f.5085.0.0
+# Vertex distance
+d$right_vertex_distance <- d$f.5215.0.0
+d$left_vertex_distance <- d$f.5274.0.0
+
+
+# 4689	Age glaucoma diagnosed
+d$age_glaucoma_diagnosed <- d$f.4689.0.0
+# 5430	Age when loss of vision due to injury or trauma diagnosed
+# 4700	Age cataract diagnosed
+# 6119	Which eye(s) affected by glaucoma
+d$glaucoma <- d$f.6119.0.0
+
+d$right_3mm_strong_meridian <- d$f.5132.0.0
+d$right_3mm_weak_meridian <- d$f.5099.0.0
+
+d$left_3mm_strong_meridian <- d$f.5135.0.0
+d$left_3mm_weak_meridian <- d$f.5096.0.0
+
+d$right_mean_corneal_power <- (d[,'right_3mm_strong_meridian'] + d[,'right_3mm_weak_meridian'])/2
+d$left_mean_corneal_power <- (d[,'left_3mm_strong_meridian'] + d[,'left_3mm_weak_meridian'])/2
+d$right_3mm_mean_corneal_power <- (d$right_3mm_strong_meridian + d$right_3mm_weak_meridian)/2
+d$left_3mm_mean_corneal_power <- (d$left_3mm_strong_meridian + d$left_3mm_weak_meridian)/2
+
+d$right_spherical_power <- d$f.5084.0.0
+d$left_spherical_power <- d$f.5085.0.0
+d$right_3mm_spherical_equivalent <- d$right_spherical_equivalent <- d$right_spherical_power + .5 * d$right_3mm_cylindrical_power
+d$left_3mm_spherical_equivalent <- d$left_spherical_equivalent <- d$left_spherical_power + .5 * d$left_3mm_cylindrical_power
+
+
+# axis of astigmatism
+#5107 3mm strong meridian angle (right) #5100 3mm weak meridian angle (right)
+d$right_3mm_strong_meridian_angle<-d$f.5107.0.0
+d$right_3mm_weak_meridian_angle<-d$f.5100.0.0
+d$right_axis_of_astigmatism <- d$right_3mm_strong_meridian_angle-d$right_3mm_weak_meridian_angle
+#5104 3mm strong meridian angle (left) #5103 3mm weak meridian angle (left)
+d$left_3mm_strong_meridian_angle<-d$f.5104.0.0
+d$left_3mm_weak_meridian_angle<-d$f.5103.0.0
+d$left_axis_of_astigmatism <- d$left_3mm_strong_meridian_angle-d$left_3mm_weak_meridian_angle
+
+d$pos_right_axis_of_astigmatism <- d$right_axis_of_astigmatism>0
+d$pos_left_axis_of_astigmatism <- d$left_axis_of_astigmatism>0
+
+cat('Participants in UKBB:\n')
+print(dim(d))
+i <- which(!is.na(d$left_corneal_astigmatism)&!is.na(d$right_corneal_astigmatism))
+
+cat('Participants with astigmatism measures available:\n')
+print(dim(d <- d[i,]))
+
+d[,'right_KC_proxy1'] <- 0
+d[which(d[,'right_mean_corneal_power']>48&d$right_3mm_asymmetry_index_for_irregular_astigmatism_level>1) ,'right_KC_proxy1'] <- 1
+d[,'right_KC_proxy2'] <- 0
+d[which(d[,'right_mean_corneal_power']>49&d$right_3mm_asymmetry_index_for_irregular_astigmatism_level>1),'right_KC_proxy2'] <- 1
+d[,'right_KC_proxy3'] <- 0
+d[which(d[,'right_mean_corneal_power']>50&d$right_3mm_asymmetry_index_for_irregular_astigmatism_level>1),'right_KC_proxy3'] <- 1
+count_right_KC_proxy1 <- length(which(d$right_KC_proxy1==1))
+pct_right_KC_proxy1 <- 100*count_right_KC_proxy1/nrow(d)
+count_right_KC_proxy2 <- length(which(d$right_KC_proxy2==1))
+pct_right_KC_proxy2 <- 100*count_right_KC_proxy2/nrow(d)
+count_right_KC_proxy3 <- length(which(d$right_KC_proxy3==1))
+pct_right_KC_proxy3 <- 100*count_right_KC_proxy3/nrow(d)
+
+d[,'left_KC_proxy1'] <- 0
+d[which(d[,'left_mean_corneal_power']>48&d$left_3mm_asymmetry_index_for_irregular_astigmatism_level>1) ,'left_KC_proxy1'] <- 1
+d[,'left_KC_proxy2'] <- 0
+d[which(d[,'left_mean_corneal_power']>49&d$left_3mm_asymmetry_index_for_irregular_astigmatism_level>1),'left_KC_proxy2'] <- 1
+d[,'left_KC_proxy3'] <- 0
+d[which(d[,'left_mean_corneal_power']>50&d$left_3mm_asymmetry_index_for_irregular_astigmatism_level>1),'left_KC_proxy3'] <- 1
+
+both_KC_proxy1_count <- length(which(d$right_KC_proxy1&d$left_KC_proxy1))
+both_KC_proxy2_count <- length(which(d$right_KC_proxy2&d$left_KC_proxy2))
+both_KC_proxy3_count <- length(which(d$right_KC_proxy3&d$left_KC_proxy3))
+
+d.KC_proxy3 <- d[which(d$right_KC_proxy3&d$left_KC_proxy3),]
+
+both_ukbb_keratoconus <- d.keratoconus <- d[grep('H186',as.character(d$f.41202.0.0)),]
+
+#d.keratoconus$f.41202.0.0
+#multivariable_townsend_pvalue=0
+
+
+
 
 # age
 # Age (2010) 2010 minus 34-0.0 
@@ -396,13 +435,6 @@ lbl.0009 <- c("Female","Male")
 d$f.31.0.0 <- ordered(bd$f.31.0.0, levels=lvl.0009, labels=lbl.0009)
 
 
-
-print(pct_white<-round(100*length(which(d$ethnicity=='white'))/nrow(d)),2)
-print(pct_asian<-round(100*length(which(d$ethnicity=='asian'))/nrow(d),2))
-print(pct_black<-round(100*length(which(d$ethnicity=='black'))/nrow(d),2))
-print(pct_mixed<-round(100*length(which(d$ethnicity=='mixed'))/nrow(d),2))
-print(pct_chinese<-round(100*length(which(d$ethnicity=='chinese'))/nrow(d),2))
-
 sort(by(d$left_corneal_astigmatism,d$ethnicity,mean),decreasing=FALSE)
 sort(by(d$right_corneal_astigmatism,d$ethnicity,mean),decreasing=FALSE)
 
@@ -522,10 +554,6 @@ d$uv_protection[which(d$uv_protection==1)] <- 'Never/rarely'
 d$uv_protection[which(d$uv_protection==2)] <- 'Sometimes'
 d$uv_protection[which(d$uv_protection==3)] <- 'Most of the time'
 d$uv_protection[which(d$uv_protection==4)] <- 'Always'
-
-# deprivation index
-d$townsend_deprivation_index <- d$f.189.0.0
-
 # BMI
 d$BMI <- d$f.23104.0.0
 
@@ -618,17 +646,24 @@ print(right_3mm_strong_meridian_49D_count <- length(which(d$right_3mm_strong_mer
 print(right_3mm_strong_meridian_49D_prop <- round(100*right_3mm_strong_meridian_49D_count/nrow(d),1))
 print(right_3mm_strong_meridian_50D_count <- length(which(d$right_3mm_strong_meridian>50)))
 print(right_3mm_strong_meridian_50D_prop <- round(100*right_3mm_strong_meridian_50D_count/nrow(d),1))
-  
-print(pct_greater_than_05D_right_3mm_corneal_astigmatism <- round(100*length(which(d$right_3mm_astigmatism>.5))/nrow(d)))
-print(pct_greater_than_1D_right_3mm_corneal_astigmatism <- round(100*length(which(d$right_3mm_astigmatism>1))/nrow(d)))
-print(pct_greater_than_15D_right_3mm_corneal_astigmatism <- round(100*length(which(d$right_3mm_astigmatism>1.5))/nrow(d)))
-print(pct_greater_than_2D_right_3mm_corneal_astigmatism <- round(100*length(which(d$right_3mm_astigmatism>2))/nrow(d)))
+# left
+print(left_3mm_strong_meridian_48D_count <- length(which(d$left_3mm_strong_meridian>48)))
+print(left_3mm_strong_meridian_48D_prop <- round(100*left_3mm_strong_meridian_48D_count/nrow(d),1))
+print(left_3mm_strong_meridian_49D_count <- length(which(d$left_3mm_strong_meridian>49)))
+print(left_3mm_strong_meridian_49D_prop <- round(100*left_3mm_strong_meridian_49D_count/nrow(d),1))
+print(left_3mm_strong_meridian_50D_count <- length(which(d$left_3mm_strong_meridian>50)))
+print(left_3mm_strong_meridian_50D_prop <- round(100*left_3mm_strong_meridian_50D_count/nrow(d),1))
 
-print(pct_greater_than_05D_left_3mm_corneal_astigmatism <- round(100*length(which(d$left_3mm_astigmatism>.5))/nrow(d)))
-print(pct_greater_than_1D_left_3mm_corneal_astigmatism <- round(100*length(which(d$left_3mm_astigmatism>1))/nrow(d)))
-print(pct_greater_than_15D_left_3mm_corneal_astigmatism <- round(100*length(which(d$left_3mm_astigmatism>1.5))/nrow(d)))
-print(pct_greater_than_2D_left_3mm_corneal_astigmatism <- round(100*length(which(d$left_3mm_astigmatism>2))/nrow(d)))
-
+print('right')
+print(pct_greater_than_05D_right_3mm_corneal_astigmatism <- round(100*prop.table(table(d$right_3mm_astigmatism>.5)))[[2]])
+print(pct_greater_than_1D_right_3mm_corneal_astigmatism <- round(100*prop.table(table(d$right_3mm_astigmatism>1)))[[2]])
+print(pct_greater_than_15D_right_3mm_corneal_astigmatism <- round(100*prop.table(table(d$right_3mm_astigmatism>1.5)))[[2]])
+print(pct_greater_than_2D_right_3mm_corneal_astigmatism <- round(100*prop.table(table(d$right_3mm_astigmatism>2)))[[2]])
+print('left')
+print(pct_greater_than_05D_left_3mm_corneal_astigmatism <- round(100*prop.table(table(d$left_3mm_astigmatism>.5)))[[2]])
+print(pct_greater_than_1D_left_3mm_corneal_astigmatism <- round(100*prop.table(table(d$left_3mm_astigmatism>1)))[[2]])
+print(pct_greater_than_15D_left_3mm_corneal_astigmatism <- round(100*prop.table(table(d$left_3mm_astigmatism>1.5)))[[2]])
+print(pct_greater_than_2D_left_3mm_corneal_astigmatism <- round(100*prop.table(table(d$left_3mm_astigmatism>2)))[[2]])
 
 
 prop.table(table(d$right_3mm_astigmatism>.5))
@@ -645,24 +680,22 @@ d[which(60<=d$age & d$age<=64),'age.group']<- '60-64'
 d[which(65<=d$age),'age.group']<- '65+'
 
 
-
 d$anisometropia <- as.numeric(abs(d$left_3mm_corneal_astigmatism-d$right_3mm_corneal_astigmatism)>2)
 
 100*prop.table(table(d$anisometropia<1))
 
 ukbb_median_corneal_astigmatism <- median(c(d$right_3mm_astigmatism,d$left_3mm_astigmatism))
 
-barplot(table(cut(d$right_3mm_astigmatism,breaks = seq(floor(min(d$right_3mm_astigmatism)),ceiling(max(d$right_3mm_astigmatism)),.25))),las=2)
+#barplot(table(cut(d$right_3mm_astigmatism,breaks = seq(floor(min(d$right_3mm_astigmatism)),ceiling(max(d$right_3mm_astigmatism)),.25))),las=2)
 
-barplot(table(cut(d$right_spherical_equivalent,breaks = seq(floor(min(d$right_spherical_equivalent)),ceiling(max(d$right_spherical_equivalent)),.25))),las=2)
+#barplot(table(cut(d$right_spherical_equivalent,breaks = seq(floor(min(d$right_spherical_equivalent)),ceiling(max(d$right_spherical_equivalent)),.25))),las=2)
 
+#summary(lm((d$right_3mm_corneal_astigmatism) ~ d$myopia.eye  ))
 
+#summary(lm((d$right_3mm_corneal_astigmatism) ~ d$hypermetropia.eye + d$age ))
 
-summary(lm((d$right_3mm_corneal_astigmatism) ~ d$myopia.eye  ))
+#summary(lm((d$hypermetropia.eye)))
 
-summary(lm((d$right_3mm_corneal_astigmatism) ~ d$hypermetropia.eye + d$age ))
+#boxplot(d$rig)
 
-summary(lm((d$hypermetropia.eye)))
-
-boxplot(d$rig)
 

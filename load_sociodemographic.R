@@ -42,3 +42,30 @@ table( d$ethnicity_code <- factor(d$ethnicity, levels=names(sort(by(d$left_corne
 #print(t(t(table(d$ethnicity))))
 
 #100067#Other sociodemographic factors	 2
+# Ethnicity: 21000.0.0
+table(d[,'f.21000.0.0'])
+
+#white <- grep('^1', as.character(d[,'f.21000.0.0']))
+#mixed <- grep('^2', as.character(d[,'f.21000.0.0']))
+#asian <- grep('^3', as.character(d[,'f.21000.0.0']))
+#black <- grep('^4', as.character(d[,'f.21000.0.0']))
+#chinese <- grep('^5', as.character(d[,'f.21000.0.0']))
+#
+#d[white,'ethnicity'] <- 1
+#d[mixed,'ethnicity'] <- 2
+#d[asian,'ethnicity'] <- 3
+#d[black,'ethnicity'] <- 4
+#d[chinese,'ethnicity'] <- 5
+#print(table(d[,'ethnicity'] <- as.factor(d[,'ethnicity']))
+
+##print(pct_white<-round(100*length(which(d$ethnicity=='white'))/nrow(d)),2)
+#print(pct_asian<-round(100*length(which(d$ethnicity=='asian'))/nrow(d),2))
+#print(pct_black<-round(100*length(which(d$ethnicity=='black'))/nrow(d),2))
+#print(pct_mixed<-round(100*length(which(d$ethnicity=='mixed'))/nrow(d),2))
+#print(pct_chinese<-round(100*length(which(d$ethnicity=='chinese'))/nrow(d),2))
+
+
+# deprivation index
+d$townsend_deprivation_index <- d$f.189.0.0
+
+

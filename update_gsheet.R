@@ -58,7 +58,7 @@ for (v in ukbb_vars) {
    manuscript_vars <- rbind(manuscript_vars, data.frame(varname=sprintf('#%s#',v),value=x))
 }
 
-gk <- '1XGtLNJa2SCLixfiPwczZQGLjCWIlE1AWu3UpJyEe5X8"'
+gk <- paste(scan("key.txt", what="character", sep=" "),collapse=" ")
 gsheet <- gs_key(k)
 #ukbb_var_gsheet <- gs_new(gsheet,ws_title="ukbb_variables", input = manuscript_vars,trim = TRUE, verbose = TRUE)
 gs_ws_new(gsheet, input=manuscript_vars, ws_title = "ukbb_variables", trim=TRUE, verbose = TRUE)

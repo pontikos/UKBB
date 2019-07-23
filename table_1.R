@@ -1,4 +1,4 @@
-f <- '/home/pontikos/d/UKBB/scripts/UKBB/table3_variables.csv'
+f <- '/home/pontikos/d/UKBB/scripts/UKBB/table1_variables.csv'
 vars <- read.csv(f,colClasses = c("character", "character", "character") ) 
 
 age.40 <- which(40<=d$age & d$age<49)

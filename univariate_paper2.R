@@ -90,11 +90,6 @@ mean(d$f.5262.0.0,na.rm=TRUE)
 sd(d$f.5262.0.0,na.rm=TRUE)
 univariate('left_corneal_astigmatism','f.5262.0.0',d)
 
-# Corrected Visual acuity, logMAR
-mean(d$f.5208.0.0,na.rm=TRUE)
-sd(d$f.5208.0.0,na.rm=TRUE)
-univariate('left_corneal_astigmatism','f.5208.0.0',d)
-
 # Corneal resistance factor
 mean(d$f.5265.0.0,na.rm=TRUE)
 sd(d$f.5265.0.0,na.rm=TRUE)

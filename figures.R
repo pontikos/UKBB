@@ -1,17 +1,8 @@
 
+library(cowplot)
 library(beeswarm)
 trans <- function(x) log(x)
 
-
-x <- d$right_3mm_corneal_astigmatism
-
-y <- list('0.00-0.49'=length(which(0 <= x & x < 0.49)),'0.50-0.99'=length(which(0.5 <= x & x < 0.99)),'1.00-1.49'=length(which(1.00 <= x & x < 1.49)),'1.50-1.99'=length(which(1.5 <= x & x < 1.99)),'2.00-2.49'=length(which(2.00 <= x & x < 2.49)),'2.50-2.99'=length(which(2.50 <= x & x < 2.99)),'3.00-3.49'=length(which(3.00 <= x & x < 3.49)),'>4.00'=length(which(x>4.00)))
-y<-data.frame(names=as.character(names(y)),values=as.numeric(y))
-y$names <- as.character(y$names)
-
-#barplot(100*as.numeric(y)/sum(as.numeric(y)),names.arg = names(y),ylab="Prevalence (%)",xlab="Corneal Astigmatism (D)")
-
-ggplot(data=y, aes(x=y$names, y=100*values/sum(y$values))) +  geom_bar(stat="identity") + theme_bw() + theme(axis.text.x=element_text(angle=45,hjust=1),text=element_text(size=20)) + scale_x_discrete(limits=y$names) + xlab('Corneal Astigmatism (D)') + ylab("Prevalence (%)") +  theme(panel.grid.major.x = element_blank() ,  panel.grid.major.y = element_line( size=.1, color="black" )) + scale_y_continuous(breaks=seq(0,40,5))
 
 
 
@@ -173,29 +164,27 @@ lines(density((d$right_3mm_corneal_astigmatism)),lty=2,col='red')
 plot(density(log(d$left_3mm_corneal_astigmatism)),main='b)',xlab='transformed',col='blue')
 lines(density(log(d$right_3mm_corneal_astigmatism)),lty=2,col='red')
 
-# Figure 2
+pdf('figureS3.pdf')
 # cylindrical power vs age
-par(mfrow=c(3,2))
-boxplot(right_cylindrical_power ~ age.group, data=d,las=2,ylab='right cylindrical power')
-summary(m<-lm(right_cylindrical_power ~ age,d), col='red')
-confint(m)
-boxplot(left_cylindrical_power ~ age.group, data=d,las=2,ylab='left cylindrical power')
-summary(m<-lm(left_cylindrical_power ~ age,d), col='red')
-confint(m)
+summary(m<-lm(right_cylindrical_power ~ age,d))
+coefs <- coef(m)
+p1 <- ggplot(d, aes(x=age.group,y=right_cylindrical_power,group=age.group))+theme_bw()+geom_boxplot()+ylab('right cylindrical power')+theme(axis.text.x=element_text(angle=45,hjust=1),legend.position="none")+xlab('')
+#+geom_abline(intercept = coefs[1], slope = coefs[2])
+summary(m<-lm(left_cylindrical_power ~ age,d))
+coefs <- coef(m)
+p2 <- ggplot(d, aes(x=age.group,y=left_cylindrical_power,group=age.group))+theme_bw()+geom_boxplot()+ylab('left cylindrical power')+theme(axis.text.x=element_text(angle=45,hjust=1),legend.position="none")+xlab('')
+#+geom_abline(intercept = coefs[1], slope = coefs[2])
 # mean corneal power vs age
-boxplot(right_mean_corneal_power ~ age.group ,d, ylab='right mean corneal power',las=2)
-print(summary(lm(right_mean_corneal_power ~ age, data=d)->m.right_mean_corneal_power.age))
-print(confint(m.right_mean_corneal_power.age))
-#abline(m.right_mean_corneal_power.age, col='red')
-boxplot(left_mean_corneal_power ~ age.group ,d, ylab='left mean corneal power',las=2)
-print(summary(lm(left_mean_corneal_power ~ age, data=d)->m.left_mean_corneal_power.age))
-print(confint(m.left_mean_corneal_power.age))
-#abline(m.left_mean_corneal_power.age, col='red')
-# axis of astigmatism with age
-pt <- prop.table(table(d$right_axis_of_astigmatism>0,d$age.group),2)
-barplot(pt[,-1],ylab = 'right axis of astigmatism > 0',las=2)
-pt <- prop.table(table(d$left_axis_of_astigmatism>0,d$age.group),2)
-barplot(pt[,-1],ylab = 'left axis of astigmatism > 0 ',las=2)
+summary(m<-lm(right_mean_corneal_power ~ age,d))
+coefs <- coef(m)
+p3 <- ggplot(d, aes(x=age.group, y=right_mean_corneal_power,group=age.group))+theme_bw()+geom_boxplot()+ylab('right mean corneal power')+theme(axis.text.x=element_text(angle=45,hjust=1),legend.position="none")+xlab('')
+#+geom_abline(intercept = coefs[1], slope = coefs[2])
+summary(m<-lm(left_mean_corneal_power ~ age,d))
+coefs <- coef(m)
+p4 <- ggplot(d, aes(x=age.group, y=left_mean_corneal_power,group=age.group))+theme_bw()+geom_boxplot()+ylab('left mean corneal power')+theme(axis.text.x=element_text(angle=45,hjust=1),legend.position="none")+xlab('')
+#+geom_abline(intercept = coefs[1], slope = coefs[2])
+cowplot::plot_grid(p1,p2,p3,p4,labels='AUTO')
+dev.off()
 
 # amblyopia
 library(questionr)
@@ -596,6 +585,13 @@ library(sjmisc)
 library(ggplot2)
 theme_set(theme_sjplot())
 
+m <- lm((right_corneal_astigmatism) ~ right_corneal_corrected_iop*age,d)
+plot_model(m, type = "pred", terms=c('age','right_corneal_corrected_iop') )
+m <- lm((left_corneal_astigmatism) ~ left_corneal_corrected_iop*age,d)
+plot_model(m, type = "pred", terms=c('age','left_corneal_corrected_iop') )
+dev.off()
+
+
 d$gender <- to_factor(d$gender)
 d$alcohol_intake <- to_factor(d$alcohol_intake)
 m <- lm(log(right_corneal_astigmatism) ~ gender*age*alcohol_intake,d)
@@ -638,8 +634,101 @@ m <- lm(log(left_corneal_astigmatism) ~ age_completed_full_time_education*skin_c
 plot_model(m, type = "pred", terms = c("age_completed_full_time_education", "skin_colour [very fair, fair, light olive, brown]", "gender"))
 dev.off()
 
+m <- lm((right_corneal_astigmatism) ~ townsend_deprivation_index*age,d)
+plot_model(m, type = "pred", terms = c("age", "townsend_deprivation_index"))
 
 
+
+make_labels <- function(x) {
+thresh <- list( '0.50D'=0.5, '0.75D'=0.75, '1.00D'=1.00, '1.50D'=1.50, '2.00D'=2.00)
+print(labels <- paste(sapply(names(thresh), function(k) { paste(round(100*length(which(x>thresh[k]))/length(x)),'%',' > ',k,sep='') }),collapse=' \n '))
+return(geom_label(aes(x = '2.50-2.99', y = 30 , label = labels, fill="white"),fill="white"))
+}
+
+pdf('figure1.pdf')
+x <- d$right_3mm_corneal_astigmatism
+y <- list('0.00-0.49'=length(which(0 <= x & x < 0.49)),'0.50-0.99'=length(which(0.5 <= x & x < 0.99)),'1.00-1.49'=length(which(1.00 <= x & x < 1.49)),'1.50-1.99'=length(which(1.5 <= x & x < 1.99)),'2.00-2.49'=length(which(2.00 <= x & x < 2.49)),'2.50-2.99'=length(which(2.50 <= x & x < 2.99)),'3.00-3.49'=length(which(3.00 <= x & x < 3.49)),'>4.00'=length(which(x>4.00)))
+y<-data.frame(names=as.character(names(y)),values=as.numeric(y))
+y$names <- as.character(y$names)
+#barplot(100*as.numeric(y)/sum(as.numeric(y)),names.arg = names(y),ylab="Prevalence (%)",xlab="Corneal Astigmatism (D)")
+dist.right <- ggplot(data=y, aes(x=y$names, y=100*values/sum(y$values))) +  geom_bar(stat="identity") + theme_bw() + theme(axis.text.x=element_text(angle=45,hjust=1),text=element_text(size=12)) + scale_x_discrete(limits=y$names) + xlab('Corneal Astigmatism (D) (right eye)') + ylab("Prevalence (%)") +  theme(panel.grid.major.x = element_blank() ,  panel.grid.major.y = element_line( size=.1, color="black" )) + scale_y_continuous(breaks=seq(0,40,5)) + make_labels(x)
+x <- d$left_3mm_corneal_astigmatism
+y <- list('0.00-0.49'=length(which(0 <= x & x < 0.49)),'0.50-0.99'=length(which(0.5 <= x & x < 0.99)),'1.00-1.49'=length(which(1.00 <= x & x < 1.49)),'1.50-1.99'=length(which(1.5 <= x & x < 1.99)),'2.00-2.49'=length(which(2.00 <= x & x < 2.49)),'2.50-2.99'=length(which(2.50 <= x & x < 2.99)),'3.00-3.49'=length(which(3.00 <= x & x < 3.49)),'>4.00'=length(which(x>4.00)))
+y<-data.frame(names=as.character(names(y)),values=as.numeric(y))
+y$names <- as.character(y$names)
+#barplot(100*as.numeric(y)/sum(as.numeric(y)),names.arg = names(y),ylab="Prevalence (%)",xlab="Corneal Astigmatism (D)")
+dist.left <- ggplot(data=y, aes(x=y$names, y=100*values/sum(y$values))) +  geom_bar(stat="identity") + theme_bw() + theme(axis.text.x=element_text(angle=45,hjust=1),text=element_text(size=12)) + scale_x_discrete(limits=y$names) + xlab('Corneal Astigmatism (D) (left eye)') + ylab("Prevalence (%)") +  theme(panel.grid.major.x = element_blank() ,  panel.grid.major.y = element_line( size=.1, color="black" )) + scale_y_continuous(breaks=seq(0,40,5))+make_labels(x)
+plot_grid(dist.right,dist.left,labels='AUTO')
+dev.off()
+
+
+pdf('figure2.pdf')
+X <- data.frame(do.call('rbind', by(d, d$age.group, function(x) { 100*prop.table(table(x$right_axis)) })))
+X$age <- rownames(X)
+df <- X %>% select(age, ATR, OB, WTR) %>% gather(key = "variable", value = "value", -age)
+prevalence.right <- ggplot(df, aes(x = age, y = value, group=variable, color=variable)) + geom_line()+ylab("Prevalence (%) (right eye)")+labs(colour="Axis of astigmatism")+theme_bw()+theme(axis.text.x=element_text(angle=45,hjust=1),legend.position="none")
+X <- data.frame(do.call('rbind', by(d, d$age.group, function(x) { 100*prop.table(table(x$left_axis)) })))
+X$age <- rownames(X)
+df <- X %>% select(age, ATR, OB, WTR) %>% gather(key = "variable", value = "value", -age)
+prevalence.left <- ggplot(df, aes(x = age, y = value, group=variable, color=variable)) + geom_line()+ylab("Prevalence (%) (left eye)")+labs(colour="Axis of astigmatism")+theme_bw()+theme(axis.text.x=element_text(angle=45,hjust=1),legend.position="none")
+X <- data.frame(do.call('rbind', by(d, d$age.group, function(x) { data.frame(age=unique(x$age.group), ATR=mean(x[which(x$right_axis=='ATR'),'right_corneal_astigmatism']), OB=mean(x[which(x$right_axis=='OB'),'right_corneal_astigmatism']), WTR=mean(x[which(x$right_axis=='WTR'),'right_corneal_astigmatism'])) })))
+df <- X %>% select(age, ATR, OB, WTR) %>% gather(key = "variable", value = "value", -age) 
+mean.right <- ggplot(df, aes(x = age, y = value, group=variable, color=variable)) + geom_line() + ylab("Mean Corneal Astigmatism (D) (right eye)")+ labs(colour="Axis of astigmatism")+theme_bw()+theme(axis.text.x=element_text(angle=45,hjust=1),legend.position="none")
+X <- data.frame(do.call('rbind', by(d, d$age.group, function(x) { data.frame(age=unique(x$age.group), ATR=mean(x[which(x$left_axis=='ATR'),'left_corneal_astigmatism']), OB=mean(x[which(x$left_axis=='OB'),'left_corneal_astigmatism']), WTR=mean(x[which(x$left_axis=='WTR'),'left_corneal_astigmatism'])) })))
+df <- X %>% select(age, ATR, OB, WTR) %>% gather(key = "variable", value = "value", -age)
+mean.left <- ggplot(df, aes(x = age, y = value, group=variable, color=variable)) + geom_line() + ylab("Mean Corneal Astigmatism (D) (left eye)")+labs(colour="Axis of astigmatism")+theme_bw()+theme(axis.text.x=element_text(angle=45,hjust=1),legend.position="none")
+legend <- get_legend(mean.left+guides(color=guide_legend(nrow=1))+theme(legend.pos='bottom'))
+#grid.arrange(prevalence.right,prevalence.left,ncol=2)
+pgrid <- plot_grid(prevalence.right,prevalence.left,mean.right,mean.left,labels='AUTO')
+plot_grid(pgrid, legend, ncol=1, rel_heights=c(1,.1))
+dev.off()
+
+lm_eqn <- function(df){
+    m <- lm(y ~ x, df)
+    eq <- substitute(italic(y) == a + b %.% italic(x)*","~~italic(r)^2~"="~r2,
+         list(a = format(unname(coef(m)[1]), digits = 2),
+              b = format(unname(coef(m)[2]), digits = 2),
+             r2 = format(summary(m)$r.squared, digits = 3)))
+    as.character(as.expression(eq));
+}
+
+png('figure3.png')
+age_ca.right <- ggplot(d, aes(x=age, y=right_corneal_astigmatism) ) + geom_point(alpha=0.1,position='jitter',size=0.1) + geom_smooth(method=lm,level=0.95)+theme_bw()+ylab('Corneal Astigmatism (right eye)')+ylim(low=0,high=2.5) + geom_text(x = 55, y = 2, label = lm_eqn(data.frame(y=d$right_corneal_astigmatism,x=d$age)), colour='blue', parse = TRUE, size=3)
+age_ca.left <- ggplot(d, aes(x=age, y=left_corneal_astigmatism) ) + geom_point(alpha=0.1,position='jitter',size=0.1) + geom_smooth(method=lm,level=0.95)+theme_bw()+ylab('Corneal Astigmatism (left eye)')+ylim(low=0,high=2.5)
+age_log_ca.right <- ggplot(d, aes(x=age, y=log(right_corneal_astigmatism)) ) + geom_point(alpha=0.1,position='jitter',size=0.1) + geom_smooth(method=lm,level=0.95)+theme_bw()+ylab('Log Corneal Astigmatism (right eye)')
+age_log_ca.left <- ggplot(d, aes(x=age, y=log(left_corneal_astigmatism)) ) + geom_point(alpha=0.1,position='jitter',size=0.1) + geom_smooth(method=lm,level=0.95)+theme_bw()+ylab('Log Corneal Astigmatism (left eye)')
+plot_grid(age_ca.right,age_ca.left,age_log_ca.right,age_log_ca.left,labels='AUTO')
+dev.off()
+
+pdf('figure3.pdf')
+ggplot(d, aes(x=age, y=right_corneal_astigmatism) ) + geom_smooth(method=lm,level=0.95)+theme_bw()+ylab('Corneal Astigmatism (right eye)')+ylim(low=0,high=2.5) + geom_text(x = 55, y = 2, label = lm_eqn(data.frame(y=d$right_corneal_astigmatism,x=d$age)), colour='blue', parse = TRUE, size=3) + geom_density_2d()
+dev.off()
+
+
+pdf('figureS3.pdf')
+ggplot(d, aes(x=age, y=right_cylindrical_power) ) + geom_smooth(method=lm,level=0.95)+theme_bw()+ylab('Refractive Astigmatism (right eye)')+ylim(low=0,high=2.5) + geom_text(x = 55, y = 2, label = lm_eqn(data.frame(y=d$right_cylindrical_power,x=d$age)), colour='blue', parse = TRUE, size=3) + geom_density_2d()
+dev.off()
+
+
+png('figureS4.png')
+#ggplot(d, aes(x=right_corneal_astigmatism, y=right_cylindrical_power) ) + geom_smooth(method=lm,level=0.95)+theme_bw()+xlab('Corneal Astigmatism (right eye)')+ylab('Refractive Astigmatism (right eye)')+ylim(low=0,high=2.5) + geom_text(x = 55, y = 2, label = lm_eqn(data.frame(y=d$right_cylindrical_power,x=d$right_corneal_astigmatism)), colour='blue', parse = TRUE, size=3) + geom_density_2d()
+#plot(right_cylindrical_power ~ right_corneal_astigmatism, d)
+#lines(lowess(x=d$right_corneal_astigmatism,y=d$right_corneal_astigmatism), col="red")
+library(car)
+scatterplot(right_corneal_astigmatism ~ right_cylindrical_power , data=d)
+dev.off()
+
+boxplot(townsend_deprivation_index ~ right.amblyopia.eye, d)
+
+png('ast_town.png')
+plot(right_astigmatism ~ townsend_deprivation_index, d)
+abline(lm(right_astigmatism ~ townsend_deprivation_index, d),col='red')
+dev.off()
+
+pdf('figureS7.pdf')
+boxplot(townsend_deprivation_index ~ age.group, data=d,las=2,ylab='Townsend Deprivation Index')
+#abline(m<-lm(townsend_deprivation_index ~ age,d), col='red')
+dev.off()
 
 
 

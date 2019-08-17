@@ -48,11 +48,11 @@ x <-right_corneal_astigmatism-left_corneal_astigmatism
 
 bonferroni <- .05/nrow(d)
 
-s <- t.test(log(right_corneal_astigmatism+epsilon),log(left_corneal_astigmatism+epsilon),paired=TRUE)
+#s <- t.test(log(right_corneal_astigmatism+epsilon),log(left_corneal_astigmatism+epsilon),paired=TRUE)
+s <- t.test(right_corneal_astigmatism,left_corneal_astigmatism,paired=TRUE)
 
 table.1['Difference (right-left)',1] <- sprintf("%.3f (%.3f %.2f), P=%f", s$estimate, s$conf.int[1], s$conf.int[2], s$p.value)
 table.1['Difference (right-left)',2] <- ''
-
 
 #write.table(table.1,file='',sep='\t')
 table.1$cohorts <- rownames(table.1)

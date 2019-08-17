@@ -393,3 +393,23 @@ x <- na.omit(cbind(mean_corneal_power=X$mean_corneal_power,X[,1:100]))
 
 model <- randomForest(x$mean_corneal_power ~ ., data=x)
 
+
+by(d$right_corneal_astigmatism, d$age.group, mean)
+by(d$left_corneal_astigmatism, d$age.group, mean)
+
+by(d$right_corneal_corrected_iop, d$age.group, mean, na.rm=TRUE)
+by(d$left_corneal_corrected_iop, d$age.group, mean, na.rm=TRUE)
+
+
+d1 <- d[ which(d$age.group=='40-44'),]
+summary(lm(right_corneal_astigmatism ~ right_corneal_corrected_iop,d1))
+
+d2 <- d[ which(d$age.group=='45-49'),]
+summary(lm(right_corneal_astigmatism ~ right_corneal_corrected_iop,d2))
+
+d1 <- d[ which(d$age==45),]
+summary(lm(right_corneal_astigmatism ~ right_corneal_corrected_iop,d1))
+
+
+
+

@@ -121,9 +121,42 @@ table.3.fun <- function(eye='right',
 
 right_corneal_astigmatism <- table.3.fun(eye='right', y='right_corneal_astigmatism', trans=function(x){return(x)}, y.trans='right_corneal_astigmatism')
 right_log_corneal_astigmatism <- table.3.fun(eye='right', y='right_corneal_astigmatism', trans=function(x){return(log(x))}, y.trans='log(right_corneal_astigmatism)')
-
 left_corneal_astigmatism <- table.3.fun(eye='left', y='left_corneal_astigmatism', trans=function(x){return(x)}, y.trans='left_corneal_astigmatism')
 left_log_corneal_astigmatism <- table.3.fun(eye='left', y='left_corneal_astigmatism', trans=function(x){return(log(x))}, y.trans='log(left_corneal_astigmatism)') 
+colnames(right_log_corneal_astigmatism) <- colnames(right_corneal_astigmatism) <- c("Description", "right univariate beta (95% CI)", "right univariate pvalue", "right multivariate beta (95% CI)", "right multivariate pvalue")
+colnames(left_log_corneal_astigmatism) <- colnames(left_corneal_astigmatism) <- c("Description", "left univariate beta (95% CI)", "left univariate pvalue", "left multivariate beta (95% CI)", "left multivariate pvalue")
+
+
+# univariable
+table3.1 <- cbind(right_corneal_astigmatism[,c("Description", "right univariate beta (95% CI)", "right univariate pvalue")],left_corneal_astigmatism[,c("left univariate beta (95% CI)", "left univariate pvalue")])
+table3.1 <- table3.1[which(rowSums(table3.1[,2:4]=='')<3),]
+write.table( table3.1, file='', row.names=FALSE, sep=';')
+# order by magnitude
+X.right <- table3.1[which(table3.1[,'right univariate pvalue']=='<0.001'),c('Description','right univariate beta (95% CI)')]
+X.right[order(abs(as.numeric(unlist(lapply(strsplit( X.right[,2], ' '),'[[',1)))),decreasing=TRUE),]
+X.left <- table3.1[which(table3.1[,'left univariate pvalue']=='<0.001'),c('Description','left univariate beta (95% CI)')]
+X.left[order(abs(as.numeric(unlist(lapply(strsplit( X.left[,2], ' '),'[[',1)))),decreasing=TRUE),]
+X <- merge(X.right,X.left)
+X[order(abs(as.numeric(unlist(lapply(strsplit( X[,2], ' '),'[[',1)))),decreasing=TRUE),]
+
+
+# multivariable
+table3.2 <- cbind(right_corneal_astigmatism[,c("Description", "right multivariate beta (95% CI)", "right multivariate pvalue")],left_corneal_astigmatism[,c("left multivariate beta (95% CI)", "left multivariate pvalue")])
+table3.2 <- table3.2[which(rowSums(table3.2[,2:4]=='')<3),]
+write.table( table3.2, file='', row.names=FALSE, sep=';')
+# order by magnitude
+X.right <- table3.2[which(table3.2[,'right multivariate pvalue']=='<0.001'),c('Description','right multivariate beta (95% CI)')]
+X.right[order(abs(as.numeric(unlist(lapply(strsplit( X.right[,2], ' '),'[[',1)))),decreasing=TRUE),]
+X.left <- table3.2[which(table3.2[,'left multivariate pvalue']=='<0.001'),c('Description','left multivariate beta (95% CI)')]
+X.left[order(abs(as.numeric(unlist(lapply(strsplit( X.left[,2], ' '),'[[',1)))),decreasing=TRUE),]
+X <- merge(X.right,X.left)
+X[order(abs(as.numeric(unlist(lapply(strsplit( X[,2], ' '),'[[',1)))),decreasing=TRUE),]
+
+
+tableS2.2 <- cbind(right_log_corneal_astigmatism[,c("Description", "right multivariate beta (95% CI)", "right multivariate pvalue")],left_log_corneal_astigmatism[,c("left multivariate beta (95% CI)", "left multivariate pvalue")])
+tableS2.2 <- tableS2.2[which(rowSums(tableS2.2[,2:4]=='')<3),]
+write.table( tableS2.2, file='', row.names=FALSE, sep=';')
+
 
 
 
